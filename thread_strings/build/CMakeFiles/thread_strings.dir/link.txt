@@ -1,1 +1,0 @@
-/usr/bin/c++ CMakeFiles/thread_strings.dir/src/args_handling.cpp.o CMakeFiles/thread_strings.dir/src/main.cpp.o -o thread_strings 

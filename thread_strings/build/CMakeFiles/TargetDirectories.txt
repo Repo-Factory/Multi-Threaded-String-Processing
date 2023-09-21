@@ -1,7 +1,0 @@
-/home/robox/school/cs480/assignment-two/thread_strings/build/CMakeFiles/thread_strings.dir
-/home/robox/school/cs480/assignment-two/thread_strings/build/CMakeFiles/edit_cache.dir
-/home/robox/school/cs480/assignment-two/thread_strings/build/CMakeFiles/rebuild_cache.dir
-/home/robox/school/cs480/assignment-two/thread_strings/build/CMakeFiles/list_install_components.dir
-/home/robox/school/cs480/assignment-two/thread_strings/build/CMakeFiles/install.dir
-/home/robox/school/cs480/assignment-two/thread_strings/build/CMakeFiles/install/local.dir
-/home/robox/school/cs480/assignment-two/thread_strings/build/CMakeFiles/install/strip.dir
