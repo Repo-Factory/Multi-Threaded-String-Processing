@@ -2,9 +2,7 @@
 #include <pthread.h>
 #include <functional>
 
-
 typedef void* (*ThreadFunction)(void*);
-
 
 struct Signal
 {

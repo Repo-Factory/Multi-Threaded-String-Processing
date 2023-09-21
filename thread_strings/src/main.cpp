@@ -10,9 +10,20 @@
 
 #define NUM_CHILD_THREADS 3
 
+pthread_t* ParentThread::spawnWorkerThreads(const ThreadData* threadData[], const int numThreads)
+{
+    pthread_t* threads[numThreads]; 
+    for (int i = INIT_LOOP_COUNTER; i < numThreads; i++)
+    {
+        threads[i] = new pthread_t;
+        threads[i] = Threading::spawnThread(threadData[i]->threadFunction, threadData[i]->threadArgs);
+    }
+    return *threads;
+}
+
 int main(int argc, char * argv[])
 {
-    Args args = ArgsHandling::processArgs(argc, argv);
+    const Args args = ArgsHandling::processArgs(argc, argv);
 
     pthread_mutex_t line_queue_mutex;
     pthread_cond_t lines_read_cond;
@@ -20,18 +31,21 @@ int main(int argc, char * argv[])
     pthread_mutex_t vocab_populated_mutex;
     pthread_cond_t  vocab_populated_cond;
 
-    ReadLinesData readLinesData{ArgsHandling::getTestFilePath(argv).c_str(), &line_queue_mutex, &lines_read_cond, &line_queue};
-    ReadVocabData readVocabData{ArgsHandling::getVocabPath(argv).c_str(), &vocab_populated_mutex, &vocab_populated_cond};
-    CountVocabData countVocabData{&vocab_populated_mutex, &vocab_populated_cond, &line_queue};
+    const ReadLinesData readLinesData  {ArgsHandling::getTestFilePath(argv).c_str(), &line_queue_mutex, &lines_read_cond, &line_queue};
+    const ReadVocabData readVocabData  {ArgsHandling::getVocabPath   (argv).c_str(), &vocab_populated_mutex, &vocab_populated_cond};
+    const CountVocabData countVocabData{&vocab_populated_mutex, &vocab_populated_cond, &line_queue};
 
-    ThreadData readLinesThreadData = ThreadData{&ReadLines::readlines,                  (void*)&readLinesData};
-    ThreadData readVocabThreadData = ThreadData{&ReadVocab::readvocab,                  (void*)&readVocabData};
+    ThreadData readLinesThreadData =  ThreadData{&ReadLines::readlines,                  (void*)&readLinesData};
+    ThreadData readVocabThreadData =  ThreadData{&ReadVocab::readvocab,                  (void*)&readVocabData};
     ThreadData countVocabThreadData = ThreadData{&CountVocabStrings::countvocabstrings, (void*)&countVocabData};
-    ThreadData* threadData[] = {&readLinesThreadData, &readVocabThreadData, &countVocabThreadData};
+    const ThreadData* threadData[NUM_CHILD_THREADS] = {&readLinesThreadData, &readVocabThreadData, &countVocabThreadData};
 
-    pthread_t* workerThreads = ParentThread::spawnWorkerThreads(threadData, NUM_CHILD_THREADS);
-
-
+    const pthread_t* workerThreads = ParentThread::spawnWorkerThreads(threadData, NUM_CHILD_THREADS);
+    for (int i = 0; i < NUM_CHILD_THREADS; i++)
+    {
+        pthread_join(*workerThreads++, NULL);
+    }
+    
     return EXIT_SUCCESS;
 }
 

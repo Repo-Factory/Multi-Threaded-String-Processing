@@ -41,14 +41,6 @@ struct ThreadData
 
 namespace ParentThread
 {
-    pthread_t* spawnWorkerThreads(ThreadData* threadData[], const int numThreads)
-    {
-        pthread_t* threads[numThreads];
-        for (int i = INIT_LOOP_COUNTER; i < numThreads; i++)
-        {
-            threads[i] = Threading::spawnThread((*threadData)[i].threadFunction, (*threadData)[i].threadArgs);
-        }
-        return *threads;
-    }
+    pthread_t* spawnWorkerThreads(const ThreadData* threadData[], const int numThreads);
     Success monitorAndUpdateProgressBar(ProgressBar& progressBar);
 }

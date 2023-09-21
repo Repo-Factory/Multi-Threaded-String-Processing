@@ -10,5 +10,5 @@ namespace
 
 void* CountVocabStrings::countvocabstrings(void* lineQueue)
 {
-    
+    printf("Making more threads bitch");
 }

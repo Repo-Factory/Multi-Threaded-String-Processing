@@ -2,5 +2,6 @@
 
 void* ReadVocab::readvocab(void* args)
 {
-    
+    printf("ReadVocab Thread");
+    return NULL;
 }
