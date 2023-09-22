@@ -1,8 +1,27 @@
 #include "read_lines.hpp"
 #include <stdio.h>
+#include "parent_thread.hpp"
+#include "input_handling.hpp"
+#include "args_handling.hpp"
+#include <iostream>
+
+void debugPrint(std::queue<std::string>& queue)
+{
+    const std::string& word = queue.front();
+    queue.pop();
+    std::cout << word << std::endl;
+}
 
 void* ReadLines::readlines(void* args)
 {
-    printf("ReadLines Thread");
+    ReadLinesData* readLinesData = (ReadLinesData*)args;
+    FileHandler::forEachLineOfFile(readLinesData->testfile_path, [&](const std::string& line){
+        Threading::safeAction(readLinesData->line_queue_mutex, [&](){
+            debugPrint(readLinesData->line_queue);
+            readLinesData->line_queue.push(line);
+        });
+    });
     return NULL;
 }
+
+// debugPrint(readLinesData->line_queue);

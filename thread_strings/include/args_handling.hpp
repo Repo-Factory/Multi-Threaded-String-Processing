@@ -30,8 +30,8 @@ struct Args
 namespace ArgsHandling
 {
     Args processArgs(int argc, char* argv[]);
-    const std::string getVocabPath(char* argv[]);
-    const std::string getTestFilePath(char* argv[]);
+    const char* getVocabPath(char* argv[]);
+    const char* getTestFilePath(char* argv[]);
 }
 
 std::ostream& operator<<(std::ostream& stream, Args args);
