@@ -7,6 +7,7 @@
 #include <queue>
 #include <cstdarg>
 #include <string>
+#include <atomic>
 #include <functional>
 #include "sys/types.h"
 #include "types.hpp"
@@ -17,7 +18,7 @@ struct ReadLinesData
 {   
     const char* testfile_path;
     pthread_mutex_t* line_queue_mutex;
-    pthread_cond_t* lines_read_cond;
+    std::atomic<bool>* lines_read_cond;
     std::queue<std::string>* line_queue;
 };
 
@@ -25,16 +26,16 @@ struct ReadVocabData
 {
     const char* vocab_path;
     pthread_mutex_t* vocab_populated_mutex;
-    pthread_cond_t*  vocab_populated_cond;
+    std::atomic<bool>*  vocab_populated_cond;
     std::vector<std::string>* vocab;
 };
 
 struct CountVocabData
 {
     pthread_mutex_t* vocab_populated_mutex;
-    pthread_cond_t*  vocab_populated_cond;
+    std::atomic<bool>*  vocab_populated_cond;
     pthread_mutex_t* line_queue_mutex;
-    pthread_cond_t* lines_read_cond;
+    std::atomic<bool>* lines_read_cond;
     std::queue<std::string>* line_queue;
     std::vector<std::string>* vocab;
 };

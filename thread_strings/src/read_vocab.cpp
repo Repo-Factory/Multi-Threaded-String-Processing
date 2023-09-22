@@ -12,10 +12,6 @@ void* ReadVocab::readvocab(void* args)
     std::vector<std::string>* wordsStorage = FileHandler::getWordsArrayFromFile(
         std::string(readVocabData->vocab_path), readVocabData->vocab
     );
+    *readVocabData->vocab_populated_cond = true;
     return NULL;
 }
-
-// for (std::string word : wordsStorage)
-// {
-//     std::cout << word << std::endl;
-// }

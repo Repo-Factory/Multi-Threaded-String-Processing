@@ -12,7 +12,7 @@
 #define NULL_TERMINATOR_CHAR '\0'
 #define COUNTER_INIT 0
 
-namespace
+namespace 
 {
     Trie* insertSuffixes(const char* word, Trie* trie) // Used to insert word from testfile.txt into trie
     {
@@ -42,22 +42,24 @@ namespace
     }
 }
 
-void printItemOfQueue(const std::string& line, CountVocabData* countVocabData, std::ofstream& outputFile)
+namespace
 {
-    printSubstringCount(outputFile, line, *countVocabData->vocab);
-    countVocabData->line_queue->pop();
+    void printItemOfQueue(const std::string& line, CountVocabData* countVocabData, std::ofstream& outputFile)
+    {
+        printSubstringCount(outputFile, line, *countVocabData->vocab);
+        countVocabData->line_queue->pop();
+    }
 }
 
 void* CountVocabStrings::countvocabstrings(void* args)
 {
     CountVocabData* countVocabData = (CountVocabData*)args;
     std::ofstream outputFile(OUTPUT_FILE);
-    /* wait for vocab thread */ sleep(1);
-    while (1) { 
-    if (!countVocabData->line_queue->empty()) {
+    Threading::waitForCondition(countVocabData->vocab_populated_cond); 
+    while (!countVocabData->line_queue->empty()) { 
         Threading::safeAction(countVocabData->line_queue_mutex, [&](){
             printItemOfQueue(countVocabData->line_queue->front(), countVocabData, outputFile);
         });
     }
-    }
+    return NULL;
 }
