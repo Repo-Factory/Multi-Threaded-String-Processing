@@ -9,7 +9,7 @@
 void* ReadVocab::readvocab(void* args)
 {
     ReadVocabData* readVocabData = (ReadVocabData*)args;
-    std::vector<std::string>& wordsStorage = FileHandler::getWordsArrayFromFile(
+    std::vector<std::string>* wordsStorage = FileHandler::getWordsArrayFromFile(
         std::string(readVocabData->vocab_path), readVocabData->vocab
     );
     return NULL;

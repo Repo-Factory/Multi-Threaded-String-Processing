@@ -6,11 +6,11 @@
 #define THREAD_CREATION_SUCCESS(threadReturn) threadReturn==0
 #define THREAD_CREATION_MESSAGE "Thread Not Created Properly"
 
-void Threading::safeAction(pthread_mutex_t& mutex, std::function<void()> performAction)
+void Threading::safeAction(pthread_mutex_t* mutex, std::function<void()> performAction)
 {
-    pthread_mutex_lock(&mutex);
+    pthread_mutex_lock(mutex);
     performAction();
-    pthread_mutex_unlock(&mutex);
+    pthread_mutex_unlock(mutex);
 }
 
 PthreadData* initPthreadData(PthreadData* pthread_data)

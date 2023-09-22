@@ -19,5 +19,5 @@ namespace Threading
 {
     bool waitForThread(Signal& signal);
     pthread_t* spawnThread(ThreadFunction function, void* args);
-    void safeAction(pthread_mutex_t& mutex, std::function<void()>& action);
+    void safeAction(pthread_mutex_t* mutex, std::function<void()> action);
 }

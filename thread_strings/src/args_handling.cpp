@@ -72,12 +72,12 @@ Args ArgsHandling::processArgs(int argc, char* argv[])
     return Args{getMandadtoryArgs(argc, argv), getOptionalArgs(argc, argv)};
 }
 
-const std::string ArgsHandling::getVocabPath(char* argv[])
+const char* ArgsHandling::getVocabPath(char* argv[])
 {
     return argv[VOCAB_FILE_INDEX];
 }
 
-const std::string ArgsHandling::getTestFilePath(char* argv[])
+const char* ArgsHandling::getTestFilePath(char* argv[])
 {
     return argv[TEST_FILE_INDEX];
 }
