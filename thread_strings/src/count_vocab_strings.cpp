@@ -38,7 +38,7 @@ namespace
         Trie* trie = new Trie();
         const int substringCount = countSubstrings(words, insertSuffixes(line.c_str(), trie));
         if (substringCount != 0) std::cout <<  substringCount << std::endl;
-        return outputFile;
+        return outputFile << substringCount;
     }
 }
 

@@ -7,16 +7,12 @@
  * @dependency CharsMap
  */
 
-
 #include "trie.hpp"
 #include <cstdlib>
 
-namespace
-{
-    #define VALID_CHARACTERS 31
-    #define NULL_TERMINATOR_INDEX 30
-    #define NOT_FOUND 999               // Defined in chars_map API
-}
+#define VALID_CHARACTERS 31
+#define NULL_TERMINATOR_INDEX 30
+#define NOT_FOUND 999               // Defined in chars_map API
 
 struct TrieNode
 {

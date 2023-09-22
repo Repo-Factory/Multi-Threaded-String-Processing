@@ -24,7 +24,6 @@ namespace
             printf(FILE_OPEN_ERROR_MESSAGE, filename.c_str());
             exit(EXIT_FAILURE);
         }
-
         return stream;
     } // Note the file will have to be closed at some point if this function is called
     
@@ -55,4 +54,21 @@ void FileHandler::forEachLineOfFile(const std::string& filename, const std::func
         performOperation(line);
     }
     stream.close();
+}
+
+namespace
+{
+    const int recursiveLineCount(std::ifstream& stream, std::string& line, int currentLineCount=0)
+    {
+        return std::getline(stream, line) ? recursiveLineCount(stream, line, ++currentLineCount) : currentLineCount;
+    }
+}
+
+int FileHandler::getLineCount(const std::string& filename)
+{
+    std::ifstream stream = openFile(filename);
+    std::string line;
+    const int lineCount = recursiveLineCount(stream, line);
+    stream.close();
+    return lineCount;
 }

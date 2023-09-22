@@ -17,7 +17,7 @@ add_executable(
   ${SRC_DIR}/thread_strings/src/read_lines.cpp
   ${SRC_DIR}/thread_strings/src/read_vocab.cpp
   ${SRC_DIR}/thread_strings/src/input_handling.cpp
-  ${SRC_DIR}/thread_strings/src/output_handling.cpp
+  ${SRC_DIR}/thread_strings/src/progress_bar.cpp
   ${SRC_DIR}/thread_strings/src/parent_thread.cpp
   ${SRC_DIR}/thread_strings/src/count_vocab_strings.cpp
   ${SRC_DIR}/thread_strings/src/args_handling.cpp
