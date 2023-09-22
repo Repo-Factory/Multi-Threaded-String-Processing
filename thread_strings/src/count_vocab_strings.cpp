@@ -18,8 +18,7 @@ namespace
     {
         while (*word != NULL_TERMINATOR_CHAR)
         {
-            trie->insertString(word, trie->getRoot());
-            word++;
+            trie->insertString(word++, trie->getRoot());   
         }
         return trie;
     } // Example: If we want to search great, we should insert great, reat, eat, at, and t for fast lookup of substrings
@@ -27,10 +26,9 @@ namespace
     int countSubstrings(const std::vector<std::string>& words, Trie* trie) // For each substring of vocab, increment count if found in trie
     {
         int substringCount = COUNTER_INIT;
-        for (std::string line : words)
+        for (const std::string line : words)
         {
-            if (trie->searchString(line.c_str(), trie->getRoot()))
-                substringCount++;
+            substringCount += trie->searchString(line.c_str(), trie->getRoot());
         }
         return substringCount;
     }
@@ -38,9 +36,16 @@ namespace
     std::ostream& printSubstringCount(std::ostream& outputFile, const std::string line, const std::vector<std::string>& words) // Called from main for every word in testfile
     {
         Trie* trie = new Trie();
-        std::cout << countSubstrings(words, insertSuffixes(line.c_str(), trie)) << std::endl;
+        const int substringCount = countSubstrings(words, insertSuffixes(line.c_str(), trie));
+        if (substringCount != 0) std::cout <<  substringCount << std::endl;
         return outputFile;
     }
+}
+
+void printItemOfQueue(const std::string& line, CountVocabData* countVocabData, std::ofstream& outputFile)
+{
+    printSubstringCount(outputFile, line, *countVocabData->vocab);
+    countVocabData->line_queue->pop();
 }
 
 void* CountVocabStrings::countvocabstrings(void* args)
@@ -48,15 +53,11 @@ void* CountVocabStrings::countvocabstrings(void* args)
     CountVocabData* countVocabData = (CountVocabData*)args;
     std::ofstream outputFile(OUTPUT_FILE);
     /* wait for vocab thread */ sleep(1);
-    /* try to pull something out of queue */
     while (1) { 
     if (!countVocabData->line_queue->empty()) {
         Threading::safeAction(countVocabData->line_queue_mutex, [&](){
-            const std::string line = countVocabData->line_queue->front();
-            printSubstringCount(outputFile, line, *countVocabData->vocab);
-            countVocabData->line_queue->pop();
+            printItemOfQueue(countVocabData->line_queue->front(), countVocabData, outputFile);
         });
     }
     }
-    /* if something in queue, print substring count */
 }
