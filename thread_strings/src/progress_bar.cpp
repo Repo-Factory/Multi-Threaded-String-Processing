@@ -27,24 +27,23 @@ ProgressBar::ProgressBar(int total_progress_marks, int special_mark_interval, in
     metricTotal{metricTotal} 
 {}
 
-char ProgressBar::nextProgressBarChar(const int currentMetric, std::string currentProgress)
+char ProgressBar::nextProgressBarChar(const int currentMetric, std::string printedSymbols)
 {
     const float percentComplete = (float)currentMetric / this->metricTotal;
     const int charsToDisplay =  percentComplete * this->total_progress_marks;
-    return currentProgress.size() < charsToDisplay ? determineSpecialOrDefault(this->special_mark_interval, currentProgress.size()) : *EMPTY_CHAR;
+    return printedSymbols.size() < charsToDisplay ? determineSpecialOrDefault(this->special_mark_interval, printedSymbols.size()) : *EMPTY_CHAR;
 }
 
-int ProgressBar::displayProgressBar(int& metric, std::string currentProgress)
+int ProgressBar::displayProgressBar(int& metric, std::string printedSymbols)
 {
-    while (metric != this->metricTotal)
-    {
-        const char nextChar = nextProgressBarChar(metric, currentProgress); 
+    while (metric != this->metricTotal) {
+        const char nextChar = nextProgressBarChar(metric, printedSymbols); 
         if (nextChar) {
-            currentProgress+=nextChar;
+            printedSymbols+=nextChar;
             printProgressChar(nextChar);
         }
     }
-    std::cout << nextProgressBarChar(metric, currentProgress) << std::endl;
+    std::cout << nextProgressBarChar(metric, printedSymbols) << std::endl;
     return metric;
 }
 

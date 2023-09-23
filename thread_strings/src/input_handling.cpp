@@ -57,29 +57,15 @@ void FileHandler::forEachLineOfFile(const std::string& filename, const std::func
     stream.close();
 }
 
-namespace
-{
-    const int recursiveLineCount(std::ifstream& stream, std::string& line, int currentLineCount=0)
-    {
-        return std::getline(stream, line) ? recursiveLineCount(stream, line, ++currentLineCount) : currentLineCount;
-    }
-}
-
 int FileHandler::getLineCount(const std::string& filename)
 {
     std::ifstream stream = openFile(filename);
     std::string line;
-    const int lineCount = recursiveLineCount(stream, line);
+    int lineCount=0;
+    while (std::getline(stream, line))
+        lineCount++;    
     stream.close();
     return lineCount;
-}
-
-namespace
-{
-    const int recursiveCharCount(std::ifstream& stream, char& letter, int currentLetterCount=0)
-    {
-        return stream.get(letter) ? recursiveCharCount(stream, letter, ++currentLetterCount) : currentLetterCount;
-    }
 }
 
 int FileHandler::getLetterCount(const std::string& filename)

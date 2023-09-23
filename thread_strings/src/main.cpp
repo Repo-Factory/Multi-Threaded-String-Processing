@@ -6,11 +6,8 @@
 #include "count_vocab_strings.hpp"
 #include "input_handling.hpp"
 #include "types.hpp"
-#include <memory>
-#include <iostream>
 
 #define NUM_CHILD_THREADS 3
-#define THREAD_FAILED(thread_return_value) thread_return_value != 0 
 #define OUTPUT_FILE "countNumOfContainedVocab.txt"
 
 int main(int argc, char* argv[])

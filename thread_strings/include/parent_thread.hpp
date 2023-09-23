@@ -43,18 +43,6 @@ struct CountVocabData
     std::ofstream& output_file;
 };
 
-struct ParentThreadData
-{
-    const int vocabFileLineCount;
-    const int testFileLineCount;
-    pthread_mutex_t* vocab_populated_mutex;
-    std::atomic<bool>*  vocab_populated_cond;
-    pthread_mutex_t* line_queue_mutex;
-    std::atomic<bool>* lines_read_cond;
-    std::queue<std::string>* line_queue;
-    std::vector<std::string>* vocab;
-};
-
 struct ThreadData
 {
     ThreadFunction threadFunction;
