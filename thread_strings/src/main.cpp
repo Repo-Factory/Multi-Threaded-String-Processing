@@ -10,6 +10,9 @@
 #define NUM_CHILD_THREADS 3
 #define OUTPUT_FILE "countNumOfContainedVocab.txt"
 
+
+
+
 int main(int argc, char* argv[])
 {
     const Args args = ArgsHandling::processArgs(argc, argv);
@@ -37,17 +40,10 @@ int main(int argc, char* argv[])
     const ThreadData* threadData[NUM_CHILD_THREADS] = {&readLinesThreadData, &readVocabThreadData, &countVocabThreadData};
 
     ParentThread::spawnWorkerThreads(threadData, NUM_CHILD_THREADS);
-  
-    ParentThread::monitorAndUpdateProgressBar(
-        args.optionalArgs.p_flag, args.optionalArgs.m_flag, FileHandler::getLetterCount(ArgsHandling::getVocabPath(argv)), vocabFileReadInChars
-    );
-    ParentThread::monitorAndUpdateProgressBar(
-        args.optionalArgs.p_flag, args.optionalArgs.m_flag, FileHandler::getLineCount(ArgsHandling::getTestFilePath(argv)), testFileprocessedLines
-    );
+    ParentThread::monitorReadVocabBar(args, vocabFileReadInChars);
+    ParentThread::monitorReadLinesBar(args, testFileprocessedLines);
 
     return EXIT_SUCCESS;
 }
-
-
 
 

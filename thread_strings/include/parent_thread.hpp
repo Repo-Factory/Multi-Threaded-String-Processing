@@ -13,6 +13,7 @@
 #include "types.hpp"
 #include "progress_bar.hpp"
 #include "threading.hpp"
+#include "args_handling.hpp"
 
 struct ReadLinesData
 {   
@@ -52,5 +53,6 @@ struct ThreadData
 namespace ParentThread
 {
     std::array<pthread_t*, NUM_CHILD_THREADS> spawnWorkerThreads(const ThreadData* threadData[], const int numThreads);
-    Success monitorAndUpdateProgressBar(int p_flag, int m_flag, int metricTotal, int& processedLines);
+    void monitorReadVocabBar(const Args& args, int& progressTracker);
+    void monitorReadLinesBar(const Args& args, int& progressTracker);
 }

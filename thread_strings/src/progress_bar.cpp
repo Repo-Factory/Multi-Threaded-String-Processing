@@ -15,9 +15,10 @@ namespace
         return IS_MODULO((currentIndex+1), specialInterval) ? PROGRESS_SYMBOL_SPECIAL : PROGRESS_SYMBOL_DEFAULT;
     }
 
-    void printProgressChar(const char c)
+    bool printProgressChar(const char c)
     {
         std::cout << c; std::cout.flush();
+        return c;   // Will return false if empty char character passed in
     }
 }
 
@@ -27,23 +28,18 @@ ProgressBar::ProgressBar(int total_progress_marks, int special_mark_interval, in
     metricTotal{metricTotal} 
 {}
 
-char ProgressBar::nextProgressBarChar(const int currentMetric, std::string printedSymbols)
+char ProgressBar::nextProgressBarChar(const int currentMetric, int printedSymbols)
 {
     const float percentComplete = (float)currentMetric / this->metricTotal;
     const int charsToDisplay =  percentComplete * this->total_progress_marks;
-    return printedSymbols.size() < charsToDisplay ? determineSpecialOrDefault(this->special_mark_interval, printedSymbols.size()) : *EMPTY_CHAR;
+    return printedSymbols < charsToDisplay ? determineSpecialOrDefault(this->special_mark_interval, printedSymbols) : *EMPTY_CHAR;
 }
 
-int ProgressBar::displayProgressBar(int& metric, std::string printedSymbols)
+int ProgressBar::displayProgressBar(int& metric, int printedSymbols)
 {
     while (metric != this->metricTotal) {
-        const char nextChar = nextProgressBarChar(metric, printedSymbols); 
-        if (nextChar) {
-            printedSymbols+=nextChar;
-            printProgressChar(nextChar);
-        }
+        printedSymbols += printProgressChar(nextProgressBarChar(metric, printedSymbols));
     }
     std::cout << nextProgressBarChar(metric, printedSymbols) << std::endl;
     return metric;
 }
-

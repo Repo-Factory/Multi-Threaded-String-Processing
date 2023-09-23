@@ -10,10 +10,8 @@
 #include <string>
 #include <vector>
 
-namespace
-{
-    #define FILE_OPEN_ERROR_MESSAGE "Failed to open the file %s"
-}
+#define FILE_OPEN_ERROR_MESSAGE "Failed to open the file %s"
+#define COUNT_NEW_LINE 1
 
 namespace  
 {
@@ -32,7 +30,7 @@ namespace
         std::string word;
         while (std::getline(stream, word)) {
             vocab->push_back(word);
-            progressTracker+=word.size()+1; // Account for newline
+            progressTracker+=word.size()+COUNT_NEW_LINE;
         }
         stream.close();
         return vocab;
