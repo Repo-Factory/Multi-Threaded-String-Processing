@@ -26,7 +26,7 @@ namespace
         printf("There are %d %s in %s\n", fileMetricCount, metric.c_str(), filename);
     }
 
-    int monitorAndUpdateProgressBar(int p_flag, int m_flag, int metricTotal, int& metricProgress)
+    int monitorAndUpdateProgressBar(const int p_flag, const int m_flag, const int metricTotal, int& metricProgress)
     {
         const auto progressBar = std::unique_ptr<ProgressBar>(new ProgressBar(p_flag, m_flag, metricTotal));
         return progressBar->displayProgressBar(metricProgress);

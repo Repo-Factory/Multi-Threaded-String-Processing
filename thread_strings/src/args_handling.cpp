@@ -18,7 +18,7 @@
 
 namespace
 {
-    void validate_mFlag(OptionalArgs& optionalArgs)
+    void validate_mFlag(const OptionalArgs& optionalArgs)
     {
         if (OUT_OF_RANGE_M_FLAG(optionalArgs.m_flag)) {
             printf(INVALID_M_FLAG_ERROR_MESSAGE, CHARACTERS_FOR_MARK_M_FLAG_DEFAULT);
@@ -82,7 +82,7 @@ const char* ArgsHandling::getTestFilePath(char* argv[])
     return argv[TEST_FILE_INDEX];
 }
 
-std::ostream& operator<<(std::ostream& stream, Args args)
+std::ostream& operator<<(std::ostream& stream, Args& args)
 {
     return stream << args.mandatoryArgs.sourceVocab << args.mandatoryArgs.testFile << args.optionalArgs.m_flag << args.optionalArgs.p_flag << args.optionalArgs.v_flag;
 }

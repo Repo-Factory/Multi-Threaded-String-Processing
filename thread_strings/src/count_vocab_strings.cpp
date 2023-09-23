@@ -27,7 +27,7 @@ namespace
     int countSubstrings(const std::vector<std::string>& words, Trie* trie) // For each substring of vocab, increment count if found in trie
     {
         int substringCount = COUNTER_INIT;
-        for (const std::string line : words)
+        for (const std::string& line : words)
         {
             substringCount += trie->searchString(line.c_str(), trie->getRoot());
         }
@@ -45,7 +45,7 @@ namespace
 
 namespace
 {
-    void printSubstringCountOfQueueItem(const std::string& line, CountVocabData* countVocabData, std::ofstream& outputFile)
+    void printSubstringCountOfQueueItem(const std::string& line, const CountVocabData* countVocabData, std::ofstream& outputFile)
     {
         printSubstringCount(outputFile, line, *countVocabData->vocab);
         countVocabData->line_queue->pop();

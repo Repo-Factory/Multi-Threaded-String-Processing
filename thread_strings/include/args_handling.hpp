@@ -34,4 +34,4 @@ namespace ArgsHandling
     const char* getTestFilePath(char* argv[]);
 }
 
-std::ostream& operator<<(std::ostream& stream, Args args);
+std::ostream& operator<<(std::ostream& stream, Args& args);

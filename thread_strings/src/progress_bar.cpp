@@ -22,13 +22,13 @@ namespace
     }
 }
 
-ProgressBar::ProgressBar(int total_progress_marks, int special_mark_interval, int metricTotal) :
+ProgressBar::ProgressBar(const int total_progress_marks, const int special_mark_interval, const int metricTotal) :
     total_progress_marks{total_progress_marks}, 
     special_mark_interval{special_mark_interval}, 
     metricTotal{metricTotal} 
 {}
 
-char ProgressBar::nextProgressBarChar(const int currentMetric, int printedSymbols)
+char ProgressBar::nextProgressBarChar(const int currentMetric, const int printedSymbols)
 {
     const float percentComplete = (float)currentMetric / this->metricTotal;
     const int charsToDisplay =  percentComplete * this->total_progress_marks;
