@@ -8,9 +8,10 @@
 #include <queue>
 #include <unistd.h>
 
-#define OUTPUT_FILE "countNumOfContainedVocab.txt"
 #define NULL_TERMINATOR_CHAR '\0'
 #define COUNTER_INIT 0
+#define V_FLAG 0
+#define INCREMENT(number) number+=1
 
 namespace 
 {
@@ -37,28 +38,28 @@ namespace
     {
         Trie* trie = new Trie();
         const int substringCount = countSubstrings(words, insertSuffixes(line.c_str(), trie));
-        if (substringCount != 0) std::cout <<  substringCount << std::endl;
-        return outputFile << substringCount;
+        delete trie;
+        return substringCount > V_FLAG ? outputFile << substringCount << std::endl : outputFile;
     }
 }
 
 namespace
 {
-    void printItemOfQueue(const std::string& line, CountVocabData* countVocabData, std::ofstream& outputFile)
+    void printSubstringCountOfQueueItem(const std::string& line, CountVocabData* countVocabData, std::ofstream& outputFile)
     {
         printSubstringCount(outputFile, line, *countVocabData->vocab);
         countVocabData->line_queue->pop();
+        INCREMENT(*countVocabData->processedLines);
     }
 }
 
 void* CountVocabStrings::countvocabstrings(void* args)
 {
     CountVocabData* countVocabData = (CountVocabData*)args;
-    std::ofstream outputFile(OUTPUT_FILE);
     Threading::waitForCondition(countVocabData->vocab_populated_cond); 
     while (!countVocabData->line_queue->empty()) { 
         Threading::safeAction(countVocabData->line_queue_mutex, [&](){
-            printItemOfQueue(countVocabData->line_queue->front(), countVocabData, outputFile);
+            printSubstringCountOfQueueItem(countVocabData->line_queue->front(), countVocabData, countVocabData->output_file);
         });
     }
     return NULL;

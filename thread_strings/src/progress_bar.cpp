@@ -1,9 +1,64 @@
 #include "progress_bar.hpp"
+#include "threading.hpp"
+#include <unistd.h>
+#include <iostream>
+
+#define PROGRESS_SYMBOL_DEFAULT '-'
+#define PROGRESS_SYMBOL_SPECIAL '#'
+#define EMPTY_CHAR ""
+#define IS_MODULO(index, modulo) index%modulo==0
 
 namespace
 {
-    float calculatePercentageTasksComplete(int tasksComplete, int totalTasks);
-    char determineSpecialOrDefault(int specialInterval, int currentIndex);
+    char determineSpecialOrDefault(const int specialInterval, const int currentIndex)
+    {
+        return IS_MODULO((currentIndex+1), specialInterval) ? PROGRESS_SYMBOL_SPECIAL : PROGRESS_SYMBOL_DEFAULT;
+    }
+
+    void printProgressChar(const char c)
+    {
+        std::cout << c; std::cout.flush();
+    }
 }
 
-ProgressBar::ProgressBar() {}
+ProgressBar::ProgressBar(int total_progress_marks, int special_mark_interval, int metricTotal) :
+    total_progress_marks{total_progress_marks}, 
+    special_mark_interval{special_mark_interval}, 
+    metricTotal{metricTotal} 
+{}
+
+char ProgressBar::nextProgressBarChar(const int currentMetric, std::string currentProgress)
+{
+    const float percentComplete = (float)currentMetric / this->metricTotal;
+    const int charsToDisplay =  percentComplete * this->total_progress_marks;
+    return currentProgress.size() < charsToDisplay ? determineSpecialOrDefault(this->special_mark_interval, currentProgress.size()) : *EMPTY_CHAR;
+}
+
+int ProgressBar::displayReadVocabProgressBar(const WordVector& wordVector, std::string currentProgress)
+{
+    while (wordVector.size() != this->metricTotal)
+    {
+        const char nextChar = nextProgressBarChar(wordVector.size(), currentProgress); 
+        if (nextChar) {
+            currentProgress+=nextChar;
+            printProgressChar(nextChar);
+        }
+    }
+    std::cout << nextProgressBarChar(wordVector.size(), currentProgress) << std::endl;
+    return wordVector.size();
+}
+
+int ProgressBar::displayReadLineProgressBar(int& processedLines, std::string currentProgress)
+{
+    while (processedLines != this->metricTotal)
+    {
+        const char nextChar = nextProgressBarChar(processedLines, currentProgress); 
+        if (nextChar) {
+            currentProgress+=nextChar;
+            printProgressChar(nextChar);
+        }
+    }
+    std::cout << nextProgressBarChar(processedLines, currentProgress) << std::endl;
+    return processedLines;
+}
+
