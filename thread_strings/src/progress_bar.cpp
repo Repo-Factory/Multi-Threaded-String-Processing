@@ -34,31 +34,17 @@ char ProgressBar::nextProgressBarChar(const int currentMetric, std::string curre
     return currentProgress.size() < charsToDisplay ? determineSpecialOrDefault(this->special_mark_interval, currentProgress.size()) : *EMPTY_CHAR;
 }
 
-int ProgressBar::displayReadVocabProgressBar(const WordVector& wordVector, std::string currentProgress)
+int ProgressBar::displayProgressBar(int& metric, std::string currentProgress)
 {
-    while (wordVector.size() != this->metricTotal)
+    while (metric != this->metricTotal)
     {
-        const char nextChar = nextProgressBarChar(wordVector.size(), currentProgress); 
+        const char nextChar = nextProgressBarChar(metric, currentProgress); 
         if (nextChar) {
             currentProgress+=nextChar;
             printProgressChar(nextChar);
         }
     }
-    std::cout << nextProgressBarChar(wordVector.size(), currentProgress) << std::endl;
-    return wordVector.size();
-}
-
-int ProgressBar::displayReadLineProgressBar(int& processedLines, std::string currentProgress)
-{
-    while (processedLines != this->metricTotal)
-    {
-        const char nextChar = nextProgressBarChar(processedLines, currentProgress); 
-        if (nextChar) {
-            currentProgress+=nextChar;
-            printProgressChar(nextChar);
-        }
-    }
-    std::cout << nextProgressBarChar(processedLines, currentProgress) << std::endl;
-    return processedLines;
+    std::cout << nextProgressBarChar(metric, currentProgress) << std::endl;
+    return metric;
 }
 

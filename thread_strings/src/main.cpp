@@ -7,6 +7,7 @@
 #include "input_handling.hpp"
 #include "types.hpp"
 #include <memory>
+#include <iostream>
 
 #define NUM_CHILD_THREADS 3
 #define THREAD_FAILED(thread_return_value) thread_return_value != 0 
@@ -23,36 +24,29 @@ int main(int argc, char* argv[])
     std::queue<std::string> line_queue;
     pthread_mutex_t line_queue_mutex;
     std::atomic<bool> lines_read_cond = ATOMIC_VAR_INIT(false);
-    int processedLines = 0;
+    int testFileprocessedLines = INIT_INT;
+    int vocabFileReadInChars = INIT_INT;
 
     pthread_mutex_init(&line_queue_mutex, NULL);
     pthread_mutex_init(&vocab_populated_mutex, NULL);
 
     const ReadLinesData readLinesData   {ArgsHandling::getTestFilePath(argv), &line_queue_mutex, &lines_read_cond, &line_queue};
-    const ReadVocabData readVocabData   {ArgsHandling::getVocabPath(argv), &vocab_populated_mutex, &vocab_populated_cond, &vocab};
-    const CountVocabData countVocabData {&vocab_populated_mutex, &vocab_populated_cond, &line_queue_mutex, &lines_read_cond, &line_queue, &vocab, &processedLines, output_file};
+    const ReadVocabData readVocabData   {ArgsHandling::getVocabPath(argv), &vocab_populated_mutex, &vocab_populated_cond, &vocab, &vocabFileReadInChars};
+    const CountVocabData countVocabData {&vocab_populated_mutex, &vocab_populated_cond, &line_queue_mutex, &lines_read_cond, &line_queue, &vocab, &testFileprocessedLines, output_file};
 
     ThreadData readLinesThreadData  {&ReadLines::readlines, (void*)&readLinesData};
     ThreadData readVocabThreadData  {&ReadVocab::readvocab, (void*)&readVocabData};
     ThreadData countVocabThreadData {&CountVocabStrings::countvocabstrings, (void*)&countVocabData};
     const ThreadData* threadData[NUM_CHILD_THREADS] = {&readLinesThreadData, &readVocabThreadData, &countVocabThreadData};
 
-    const std::array<pthread_t*, NUM_CHILD_THREADS> workerThreads = ParentThread::spawnWorkerThreads(threadData, NUM_CHILD_THREADS);
+    ParentThread::spawnWorkerThreads(threadData, NUM_CHILD_THREADS);
   
-    const auto vocabProgressBar =std::unique_ptr<ProgressBar>(new ProgressBar(
-        args.optionalArgs.p_flag, args.optionalArgs.m_flag, FileHandler::getLineCount(ArgsHandling::getVocabPath(argv))
-    ));
-    vocabProgressBar->displayReadVocabProgressBar(vocab);
-
-    const auto lineQueueProgressBar = std::unique_ptr<ProgressBar>(new ProgressBar(
-        args.optionalArgs.p_flag, args.optionalArgs.m_flag, FileHandler::getLineCount(ArgsHandling::getTestFilePath(argv))
-    ));
-    lineQueueProgressBar->displayReadLineProgressBar(processedLines);
-
-    for (int i = INIT_LOOP_COUNTER; i < NUM_CHILD_THREADS; i++)
-    {
-        if (THREAD_FAILED(pthread_join(*workerThreads[i], NULL))) return EXIT_FAILURE;
-    }
+    ParentThread::monitorAndUpdateProgressBar(
+        args.optionalArgs.p_flag, args.optionalArgs.m_flag, FileHandler::getLetterCount(ArgsHandling::getVocabPath(argv)), vocabFileReadInChars
+    );
+    ParentThread::monitorAndUpdateProgressBar(
+        args.optionalArgs.p_flag, args.optionalArgs.m_flag, FileHandler::getLineCount(ArgsHandling::getTestFilePath(argv)), testFileprocessedLines
+    );
 
     return EXIT_SUCCESS;
 }

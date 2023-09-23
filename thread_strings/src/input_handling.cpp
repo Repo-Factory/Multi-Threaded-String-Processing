@@ -27,11 +27,12 @@ namespace
         return stream;
     } // Note the file will have to be closed at some point if this function is called
     
-    std::vector<std::string>* storeWordsFromStream(std::ifstream stream, std::vector<std::string>* vocab) // Gets each line of file and stores it as string in vector
+    std::vector<std::string>* storeWordsFromStream(std::ifstream stream, std::vector<std::string>* vocab, int& progressTracker) // Gets each line of file and stores it as string in vector
     {
         std::string word;
         while (std::getline(stream, word)) {
             vocab->push_back(word);
+            progressTracker+=word.size()+1; // Account for newline
         }
         stream.close();
         return vocab;
@@ -39,9 +40,9 @@ namespace
 }
 
 // Opens file and stores each line as new string in vector
-std::vector<std::string>* FileHandler::getWordsArrayFromFile(const std::string& filename, std::vector<std::string>* vocab)
+std::vector<std::string>* FileHandler::getWordsArrayFromFile(const std::string& filename, std::vector<std::string>* vocab, int& progressTracker)
 {
-    return storeWordsFromStream(openFile(filename), vocab);
+    return storeWordsFromStream(openFile(filename), vocab, progressTracker);
 }
 
 // Takes in function pointer param (well, C++ version) to perform passed in operation on each string of file passed in
@@ -71,4 +72,23 @@ int FileHandler::getLineCount(const std::string& filename)
     const int lineCount = recursiveLineCount(stream, line);
     stream.close();
     return lineCount;
+}
+
+namespace
+{
+    const int recursiveCharCount(std::ifstream& stream, char& letter, int currentLetterCount=0)
+    {
+        return stream.get(letter) ? recursiveCharCount(stream, letter, ++currentLetterCount) : currentLetterCount;
+    }
+}
+
+int FileHandler::getLetterCount(const std::string& filename)
+{
+    std::ifstream stream = openFile(filename);
+    char letter;
+    int letterCount=0;
+    while (stream.get(letter))
+        letterCount++;
+    stream.close();
+    return letterCount;
 }

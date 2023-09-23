@@ -28,6 +28,7 @@ struct ReadVocabData
     pthread_mutex_t* vocab_populated_mutex;
     std::atomic<bool>*  vocab_populated_cond;
     std::vector<std::string>* vocab;
+    int* readInChars;
 };
 
 struct CountVocabData
@@ -63,5 +64,5 @@ struct ThreadData
 namespace ParentThread
 {
     std::array<pthread_t*, NUM_CHILD_THREADS> spawnWorkerThreads(const ThreadData* threadData[], const int numThreads);
-    Success monitorAndUpdateProgressBar(pthread_mutex_t* mutex, const WordVector& wordVector, const int totalWords, const int p_flag_value, const int m_flag_value);
+    Success monitorAndUpdateProgressBar(int p_flag, int m_flag, int metricTotal, int& processedLines);
 }

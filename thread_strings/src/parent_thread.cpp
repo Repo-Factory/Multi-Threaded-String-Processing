@@ -1,6 +1,8 @@
 #include "parent_thread.hpp"
 #include "progress_bar.hpp"
 #include <array>
+#include <memory>
+#include "input_handling.hpp"
 
 std::array<pthread_t*, NUM_CHILD_THREADS> ParentThread::spawnWorkerThreads(const ThreadData* threadData[], const int numThreads)
 {
@@ -15,21 +17,17 @@ std::array<pthread_t*, NUM_CHILD_THREADS> ParentThread::spawnWorkerThreads(const
 
 namespace
 {
-    void displayVocabFileWordCount(const int wordCount)
+    void displayTotalFileMetric(const int fileMetricCount, const char* filename)
     {
-        printf("\n%d\n", wordCount);
-    }
-
-    void displayTestFileLineCount(const int lineCount)
-    {
-        printf("\n%d\n", lineCount);
+        printf("There are %d lines in %s\n", fileMetricCount, filename);
     }
 }
 
-Success ParentThread::monitorAndUpdateProgressBar(pthread_mutex_t* mutex, const WordVector& wordVector, const int totalWords, const int p_flag_value, const int m_flag_value)
+Success ParentThread::monitorAndUpdateProgressBar(int p_flag, int m_flag, int metricTotal, int& processedLines)
 {
-//    const int totalVocab = ProgressBar::displayReadVocabProgressBar(mutex, wordVector, totalWords, p_flag_value, m_flag_value);
-//    displayVocabFileWordCount(totalVocab);
-//    displayTestFileLineCount(displayCountVocabProgressBar());
-   return Success{true};
+    const auto vocabProgressBar =std::unique_ptr<ProgressBar>(new ProgressBar(
+        p_flag, m_flag, metricTotal
+    ));
+    displayTotalFileMetric(vocabProgressBar->displayProgressBar(processedLines), "filename.c_str()");
+    return Success{true};
 }
