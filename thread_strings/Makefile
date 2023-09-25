@@ -4,7 +4,7 @@ CXX=g++
 # -Wall       show the necessary warning files
 # -g3         information for symbolic debugger e.g. gdb 
 CXXFLAGS=-std=c++11 -Wall -g3 -c
-
+LDFLAGS=-pthread
 INCLUDE=-I./
 
 # object files
@@ -21,7 +21,7 @@ PROGRAM = countvocabstrings
 # make target specifies a specific target
 # $^ is an example of a special variable.  It substitutes all dependencies
 $(PROGRAM) : $(OBJS) $(HEADERS)
-	$(CXX) -o $(PROGRAM) $^
+	$(CXX) -o $(PROGRAM) $^ $(LDFLAGS)
 
 trie.o : trie.hpp trie.cpp
 	$(CXX) $(CXXFLAGS) $(INCLUDE) trie.cpp

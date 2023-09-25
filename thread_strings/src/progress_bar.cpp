@@ -30,8 +30,10 @@ namespace
 
     bool printProgressChar(const char c)
     {
-        std::cout << c; 
-        std::cout.flush();
+        if (c) {
+            std::cout << c; 
+            std::cout.flush();
+        }
         return c;   // Will return false if empty char character passed in
     }
 }

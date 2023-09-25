@@ -50,21 +50,25 @@ namespace
 
     std::ostream& printSubstringCount(std::ostream& outputFile, const int v_flag_value, const int substringCount)
     {
-        return substringCount > v_flag_value ? outputFile << substringCount << std::endl : outputFile;
-    }
+        return substringCount > v_flag_value ? 
+        outputFile << substringCount << std::endl : 
+        outputFile;
+    } // Only print if count is greater than v flag arg
 }
 
 namespace
 {
+    // Take first element of queue and print number of substrings. Then take it out of the queue and report more line progress (to main thread)
     void printSubstringCountOfQueueItem(const CountVocabData* countVocabData)
     {
         const int substringCount = getSubstringCount(countVocabData->line_queue_data->line_queue->front(), *countVocabData->vocab_data->vocab);
-        printSubstringCount(countVocabData->output_file, countVocabData->v_flag_value, substringCount);
+        printSubstringCount(countVocabData->output_data->output_file, countVocabData->output_data->v_flag_value, substringCount);
         countVocabData->line_queue_data->line_queue->pop();
         INCREMENT(*countVocabData->processed_lines_progress);
     }
 }
 
+// Wait for read_vocab thread before executing. Then we will count substrings of items in the line queue populated from read_lines thread
 void* CountVocabStrings::countvocabstrings(void* args)
 {
     CountVocabData* countVocabData = (CountVocabData*)args;

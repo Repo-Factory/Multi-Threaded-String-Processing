@@ -20,7 +20,7 @@ void Threading::safeAction(pthread_mutex_t* mutex, std::function<void()> perform
 
 void Threading::waitForCondition(std::atomic<bool>* condition)
 {
-    while (!*condition) std::this_thread::sleep_for(std::chrono::milliseconds(1));
+    while (!*condition) std::this_thread::sleep_for(std::chrono::milliseconds(10));
 }
 
 pthread_t* Threading::spawnThread(ThreadFunction function, void* args)

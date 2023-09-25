@@ -44,6 +44,7 @@ int main(int argc, char* argv[])
 {
     const Args args = ArgsHandling::processArgs(argc, argv);    // Handle input
     std::ofstream output_file = std::ofstream(OUTPUT_FILE);     // Handle output
+    OutputData outputData {args.optionalArgs.v_flag, output_file};
 
     /* ***** INIT SHARED DATA **** */
     std::vector<std::string> vocab;
@@ -64,7 +65,7 @@ int main(int argc, char* argv[])
     /* ***** DIRECT NEEDED SHARED DATA TO EACH THREAD **** */
     const ReadLinesData readLinesData   {args.mandatoryArgs.testFile, &lineQueueData};
     const ReadVocabData readVocabData   {args.mandatoryArgs.sourceVocab, &vocabData, &vocabFileReadInCharsProgress};
-    const CountVocabData countVocabData {&vocabData, &lineQueueData, &testFileProcessedLinesProgress, args.optionalArgs.v_flag, output_file};
+    const CountVocabData countVocabData {&vocabData, &lineQueueData, &outputData, &testFileProcessedLinesProgress};
 
     /* ***** TIE FUNCTIONS TO EACH THREAD **** */
     const ThreadData readLinesThreadData  {&ReadLines::readlines,                 (void*)&readLinesData};
@@ -73,8 +74,9 @@ int main(int argc, char* argv[])
     const ThreadData* threadData[NUM_CHILD_THREADS] = {&readLinesThreadData, &readVocabThreadData, &countVocabThreadData};
 
     /* ***** EXECUTE/MONITOR THREADS **** */
-    const ThreadArray childThreads = ParentThread::spawnWorkerThreads(threadData, NUM_CHILD_THREADS);
-    ParentThread::monitorReadVocabBar(args, vocabFileReadInCharsProgress);
-    ParentThread::monitorReadLinesBar(args, testFileProcessedLinesProgress);
-    return ParentThread::cleanWorkerThreads(childThreads, NUM_CHILD_THREADS);    
+    const ThreadArray childThreads =        ParentThread::spawnWorkerThreads(threadData, NUM_CHILD_THREADS);
+    ParentThread::monitorReadVocabBar       (args, vocabFileReadInCharsProgress);
+    Threading::waitForCondition             (&lines_read_cond);
+    ParentThread::monitorReadLinesBar       (args, testFileProcessedLinesProgress);
+    return ParentThread::cleanWorkerThreads (childThreads, NUM_CHILD_THREADS);    
 }

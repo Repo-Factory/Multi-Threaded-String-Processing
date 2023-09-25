@@ -43,12 +43,12 @@ void ParentThread::monitorReadVocabBar(const Args& args, int& progressTracker)
 {
     const auto progressBar = ProgressBar::createProgressBar(args.optionalArgs.p_flag, args.optionalArgs.m_flag, FileHandler::getLetterCount(args.mandatoryArgs.sourceVocab));
     const int totalVocab = progressBar->displayProgressBar(progressTracker);
-    printf(PROGRESS_COMPLETE_MESSAGE, FileHandler::getLineCount(args.mandatoryArgs.sourceVocab), args.mandatoryArgs.sourceVocab, COUNT_BY_WORDS);
+    printf(PROGRESS_COMPLETE_MESSAGE, FileHandler::getLineCount(args.mandatoryArgs.sourceVocab), COUNT_BY_WORDS, args.mandatoryArgs.sourceVocab);
 }
 
 void ParentThread::monitorReadLinesBar(const Args& args, int& progressTracker)
 {
     const auto progressBar = ProgressBar::createProgressBar(args.optionalArgs.p_flag, args.optionalArgs.m_flag, FileHandler::getLineCount(args.mandatoryArgs.testFile));
     const int totalLinesProcessed = progressBar->displayProgressBar(progressTracker);
-    printf(PROGRESS_COMPLETE_MESSAGE, totalLinesProcessed, args.mandatoryArgs.testFile, COUNT_BY_WORDS);
+    printf(PROGRESS_COMPLETE_MESSAGE, totalLinesProcessed, COUNT_BY_WORDS, args.mandatoryArgs.testFile);
 }

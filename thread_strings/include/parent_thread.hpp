@@ -28,6 +28,12 @@ struct VocabData
     std::atomic<bool>*  vocab_populated_cond;
 };
 
+struct OutputData
+{
+    int v_flag_value;
+    std::ofstream& output_file;
+};
+
 struct ReadLinesData
 {   
     const char* testfile_path;
@@ -45,9 +51,8 @@ struct CountVocabData
 {
     VocabData* vocab_data;
     LineQueueData* line_queue_data;
+    OutputData* output_data;
     int* processed_lines_progress;
-    int v_flag_value;
-    std::ofstream& output_file;
 };
 
 struct ThreadData
