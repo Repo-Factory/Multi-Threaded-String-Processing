@@ -55,6 +55,7 @@ void FileHandler::forEachLineOfFile(const std::string& filename, const std::func
     stream.close();
 }
 
+/* Count number of lines in file */
 int FileHandler::getLineCount(const std::string& filename)
 {
     std::ifstream stream = openFile(filename);
@@ -66,6 +67,7 @@ int FileHandler::getLineCount(const std::string& filename)
     return lineCount;
 }
 
+/* Count number of characters in file */
 int FileHandler::getLetterCount(const std::string& filename)
 {
     std::ifstream stream = openFile(filename);

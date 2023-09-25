@@ -1,10 +1,14 @@
+/* 
+ * @brief Class Child thread to read vocab from vocabulary.txt into data structure
+ *
+ * Will use vocab_populated_cond to signal to countvocabstrings that its execution
+ * has finished. getWordsArrayFromFile will keep track of progress for the progress bar
+ * Progress will be determined by number of chars read in compared to total chars in the file
+ */
+
 #include "read_vocab.hpp"
 #include "input_handling.hpp"
 #include "parent_thread.hpp"
-#include <iostream>
-#include <unistd.h>
-#include <chrono>
-#include <thread>
 
 void* ReadVocab::readvocab(void* args)
 {

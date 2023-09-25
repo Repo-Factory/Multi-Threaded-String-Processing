@@ -1,15 +1,17 @@
+/* 
+ * @brief Small generic threading-related-function library
+ *
+ * Keep nasty threading things like mutex management and bool blocking out of other code
+ */
+
 #include "threading.hpp"
-#include "types.hpp"
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <thread>
 #include <chrono>
 
-#define THREAD_CREATION_SUCCESS(threadReturn) threadReturn==0
-#define THREAD_CREATION_MESSAGE "Thread Not Created Properly"
-
-void Threading::safeAction(pthread_mutex_t* mutex, std::function<void()> performAction)
+void Threading::safeAction(pthread_mutex_t* mutex, std::function<void()> performAction) 
 {
     pthread_mutex_lock(mutex);
     performAction();

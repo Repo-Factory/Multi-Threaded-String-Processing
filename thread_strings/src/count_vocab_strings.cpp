@@ -1,16 +1,22 @@
+/* 
+ * @brief Child Thread to count substrings
+ * 
+ * Waits for vocab strings to be populated in read_vocab thread
+ * Proceeds to take elements out of line_queue as they come in from read_lines thread
+ * and print out the number of counted substrings to output file
+ * 
+ * @dependency Trie
+ */
+
 #include "count_vocab_strings.hpp"
 #include "threading.hpp"
 #include "parent_thread.hpp"
 #include "trie.hpp"
 #include <iostream>
 #include <memory>
-#include <vector>
-#include <queue>
-#include <unistd.h>
 
 #define NULL_TERMINATOR_CHAR '\0'
 #define COUNTER_INIT 0
-#define V_FLAG 0
 #define INCREMENT(number) number+=1
 
 namespace 
@@ -34,20 +40,26 @@ namespace
         return substringCount;
     }
 
-    std::ostream& printSubstringCount(std::ostream& outputFile, const std::string line, const std::vector<std::string>& words) // Called from main for every word in testfile
+    const int getSubstringCount(const std::string& line, const std::vector<std::string>& words) // Called from main for every word in testfile
     {
         Trie* trie = new Trie();
         const int substringCount = countSubstrings(words, insertSuffixes(line.c_str(), trie));
         delete trie;
-        return substringCount > V_FLAG ? outputFile << substringCount << std::endl : outputFile;
+        return substringCount;
+    }
+
+    std::ostream& printSubstringCount(std::ostream& outputFile, const int v_flag_value, const int substringCount)
+    {
+        return substringCount > v_flag_value ? outputFile << substringCount << std::endl : outputFile;
     }
 }
 
 namespace
 {
-    void printSubstringCountOfQueueItem(const std::string& line, const CountVocabData* countVocabData, std::ofstream& outputFile)
+    void printSubstringCountOfQueueItem(const CountVocabData* countVocabData)
     {
-        printSubstringCount(outputFile, line, *countVocabData->vocab);
+        const int substringCount = getSubstringCount(countVocabData->line_queue->front(), *countVocabData->vocab);
+        printSubstringCount(countVocabData->output_file, countVocabData->v_flag_value, substringCount);
         countVocabData->line_queue->pop();
         INCREMENT(*countVocabData->processedLines);
     }
@@ -59,7 +71,7 @@ void* CountVocabStrings::countvocabstrings(void* args)
     Threading::waitForCondition(countVocabData->vocab_populated_cond); 
     while (!countVocabData->line_queue->empty()) { 
         Threading::safeAction(countVocabData->line_queue_mutex, [&](){
-            printSubstringCountOfQueueItem(countVocabData->line_queue->front(), countVocabData, countVocabData->output_file);
+            printSubstringCountOfQueueItem(countVocabData);
         });
     }
     return NULL;

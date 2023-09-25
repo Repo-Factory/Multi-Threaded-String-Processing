@@ -1,10 +1,11 @@
-#pragma once
+#ifndef PROGRESS_BAR_H
+#define PROGRESS_BAR_H
 
 #include <vector>
 #include <string>
 #include <queue>
 #include <functional>
-#include "types.hpp"
+#define INIT_INT 0
 
 class ProgressBar
 {
@@ -18,3 +19,5 @@ class ProgressBar
         const int special_mark_interval; // m_flag
         const int metricTotal;
 };
+
+#endif

@@ -1,4 +1,6 @@
-#pragma once
+#ifndef INPUT_HANDLING_H
+#define INPUT_HANDLING_H
+
 #include <fstream>
 #include <vector>
 #include <string>
@@ -11,3 +13,5 @@ namespace FileHandler
     int getLineCount(const std::string& filename);
     int getLetterCount(const std::string& filename);
 }
+
+#endif

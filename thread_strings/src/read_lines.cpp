@@ -1,9 +1,14 @@
+/* 
+ * @brief Child thread to populate queue from testfile.txt
+ *
+ * Important to use safeAction for mutex unlocking/locking as the queue will be touched by countvocabstrings as well
+ * Will use lines_read_cond to communicate to other threads that its work is done
+ */
+
+
 #include "read_lines.hpp"
-#include <stdio.h>
 #include "parent_thread.hpp"
 #include "input_handling.hpp"
-#include "args_handling.hpp"
-#include <iostream>
 
 void* ReadLines::readlines(void* args)
 {

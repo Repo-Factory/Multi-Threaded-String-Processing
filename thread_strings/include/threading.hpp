@@ -1,4 +1,6 @@
-#pragma once
+#ifndef THREADING_H
+#define THREADING_H
+
 #include <pthread.h>
 #include <functional>
 #include <atomic>
@@ -11,3 +13,5 @@ namespace Threading
     void waitForCondition(std::atomic<bool>* condition);
     void safeAction(pthread_mutex_t* mutex, std::function<void()> action);
 }
+
+#endif
