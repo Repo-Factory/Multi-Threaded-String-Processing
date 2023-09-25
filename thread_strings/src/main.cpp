@@ -46,20 +46,24 @@ int main(int argc, char* argv[])
 
     /* ***** INIT SHARED DATA **** */
     std::vector<std::string> vocab;
-    std::queue<std::string> line_queue;
-    std::atomic<bool>  vocab_populated_cond =   ATOMIC_VAR_INIT(false);
-    std::atomic<bool> lines_read_cond =         ATOMIC_VAR_INIT(false);
-    int testFileprocessedLines =                INIT_INT;
-    int vocabFileReadInChars =                  INIT_INT;
-    pthread_mutex_t line_queue_mutex;
-    pthread_mutex_init(&line_queue_mutex, NULL);
     pthread_mutex_t vocab_populated_mutex;
+    std::atomic<bool>  vocab_populated_cond =   ATOMIC_VAR_INIT(false);
     pthread_mutex_init(&vocab_populated_mutex, NULL);
+    VocabData vocabData {&vocab, &vocab_populated_mutex, &vocab_populated_cond};
+
+    std::queue<std::string> line_queue;
+    pthread_mutex_t line_queue_mutex;
+    std::atomic<bool> lines_read_cond =         ATOMIC_VAR_INIT(false);
+    pthread_mutex_init(&line_queue_mutex, NULL);
+    LineQueueData lineQueueData {&line_queue, &line_queue_mutex, &lines_read_cond};
+
+    int testFileprocessedLinesProgress =        INIT_INT;
+    int vocabFileReadInCharsProgress =          INIT_INT;
     
     /* ***** DIRECT NEEDED SHARED DATA TO EACH THREAD **** */
-    const ReadLinesData readLinesData   {args.mandatoryArgs.testFile, &line_queue_mutex, &lines_read_cond, &line_queue};
-    const ReadVocabData readVocabData   {args.mandatoryArgs.sourceVocab, &vocab_populated_mutex, &vocab_populated_cond, &vocab, &vocabFileReadInChars};
-    const CountVocabData countVocabData {&vocab_populated_mutex, &vocab_populated_cond, &line_queue_mutex, &lines_read_cond, &line_queue, &vocab, args.optionalArgs.v_flag, &testFileprocessedLines, output_file};
+    const ReadLinesData readLinesData   {args.mandatoryArgs.testFile, &lineQueueData};
+    const ReadVocabData readVocabData   {args.mandatoryArgs.sourceVocab, &vocabData, &vocabFileReadInCharsProgress};
+    const CountVocabData countVocabData {&vocabData, &lineQueueData, &testFileprocessedLinesProgress, args.optionalArgs.v_flag, output_file};
 
     /* ***** TIE FUNCTIONS TO EACH THREAD **** */
     ThreadData readLinesThreadData  {&ReadLines::readlines,                 (void*)&readLinesData};
@@ -69,7 +73,7 @@ int main(int argc, char* argv[])
 
     /* ***** EXECUTE/MONITOR THREADS **** */
     std::array<pthread_t*, NUM_CHILD_THREADS> childThreads = ParentThread::spawnWorkerThreads(threadData, NUM_CHILD_THREADS);
-    ParentThread::monitorReadVocabBar(args, vocabFileReadInChars);EXIT_SUCCESS;
-    ParentThread::monitorReadLinesBar(args, testFileprocessedLines);
+    ParentThread::monitorReadVocabBar(args, vocabFileReadInCharsProgress);EXIT_SUCCESS;
+    ParentThread::monitorReadLinesBar(args, testFileprocessedLinesProgress);
     return ParentThread::cleanWorkerThreads(childThreads, NUM_CHILD_THREADS);    
 }
