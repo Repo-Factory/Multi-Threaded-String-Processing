@@ -15,10 +15,13 @@
 #define INIT_LOOP_COUNTER 0
 #define COUNT_BY_CHARACTERS "characters"
 #define COUNT_BY_WORDS "lines"
+#define PROGRESS_COMPLETE_MESSAGE "There are %d %s in %s\n"
 
-std::array<pthread_t*, NUM_CHILD_THREADS> ParentThread::spawnWorkerThreads(const ThreadData* threadData[], const int numThreads)
+typedef std::array<pthread_t*, NUM_CHILD_THREADS> ThreadArray;
+
+ThreadArray ParentThread::spawnWorkerThreads(const ThreadData* threadData[], const int numThreads)
 {
-    std::array<pthread_t*, NUM_CHILD_THREADS> threads;
+    ThreadArray threads;
     for (int i = INIT_LOOP_COUNTER; i < numThreads; i++)
     {
         threads[i] = new pthread_t;
@@ -27,7 +30,7 @@ std::array<pthread_t*, NUM_CHILD_THREADS> ParentThread::spawnWorkerThreads(const
     return threads;
 }
 
-int ParentThread::cleanWorkerThreads(std::array<pthread_t*, NUM_CHILD_THREADS> threads, const int numThreads)
+int ParentThread::cleanWorkerThreads(const ThreadArray threads, const int numThreads)
 {
     for (int i = INIT_LOOP_COUNTER; i < numThreads; i++)
     {
@@ -36,34 +39,16 @@ int ParentThread::cleanWorkerThreads(std::array<pthread_t*, NUM_CHILD_THREADS> t
     return EXIT_SUCCESS;
 }
 
-namespace
-{
-    std::unique_ptr<ProgressBar> createProgressBar(const int totalMarks, const int specialInterval, const int metricTotal)
-    {
-        return std::unique_ptr<ProgressBar>(new ProgressBar(totalMarks, specialInterval, metricTotal));
-    }
-
-    int monitorAndUpdateProgressBar(const std::unique_ptr<ProgressBar>& progressBar, int& metricProgress)
-    {
-        return progressBar->displayProgressBar(metricProgress);
-    }
-
-    void displayTotalFileMetric(const int fileMetricCount, const char* filename, const std::string& metric_type)
-    {
-        printf("There are %d %s in %s\n", fileMetricCount, metric_type.c_str(), filename);
-    }
-}
-
 void ParentThread::monitorReadVocabBar(const Args& args, int& progressTracker)
 {
-    const auto progressBar = createProgressBar(args.optionalArgs.p_flag, args.optionalArgs.m_flag, FileHandler::getLetterCount(args.mandatoryArgs.sourceVocab));
-    const int totalVocab = monitorAndUpdateProgressBar(progressBar, progressTracker);
-    displayTotalFileMetric(FileHandler::getLineCount(args.mandatoryArgs.sourceVocab), args.mandatoryArgs.sourceVocab, COUNT_BY_WORDS);
+    const auto progressBar = ProgressBar::createProgressBar(args.optionalArgs.p_flag, args.optionalArgs.m_flag, FileHandler::getLetterCount(args.mandatoryArgs.sourceVocab));
+    const int totalVocab = progressBar->displayProgressBar(progressTracker);
+    printf(PROGRESS_COMPLETE_MESSAGE, FileHandler::getLineCount(args.mandatoryArgs.sourceVocab), args.mandatoryArgs.sourceVocab, COUNT_BY_WORDS);
 }
 
 void ParentThread::monitorReadLinesBar(const Args& args, int& progressTracker)
 {
-    const auto progressBar = createProgressBar(args.optionalArgs.p_flag, args.optionalArgs.m_flag, FileHandler::getLineCount(args.mandatoryArgs.testFile));
-    const int totalLinesProcessed = monitorAndUpdateProgressBar(progressBar, progressTracker);
-    displayTotalFileMetric(totalLinesProcessed, args.mandatoryArgs.testFile, COUNT_BY_WORDS);
+    const auto progressBar = ProgressBar::createProgressBar(args.optionalArgs.p_flag, args.optionalArgs.m_flag, FileHandler::getLineCount(args.mandatoryArgs.testFile));
+    const int totalLinesProcessed = progressBar->displayProgressBar(progressTracker);
+    printf(PROGRESS_COMPLETE_MESSAGE, totalLinesProcessed, args.mandatoryArgs.testFile, COUNT_BY_WORDS);
 }

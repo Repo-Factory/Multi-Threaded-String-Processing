@@ -59,7 +59,7 @@ struct ThreadData
 namespace ParentThread
 {
     std::array<pthread_t*, NUM_CHILD_THREADS> spawnWorkerThreads(const ThreadData* threadData[], const int numThreads);
-    int cleanWorkerThreads(std::array<pthread_t*, NUM_CHILD_THREADS> threads, const int numThreads);
+    int cleanWorkerThreads(const std::array<pthread_t*, NUM_CHILD_THREADS> threads, const int numThreads);
     void monitorReadVocabBar(const Args& args, int& progressTracker);
     void monitorReadLinesBar(const Args& args, int& progressTracker);
 }

@@ -17,12 +17,15 @@
 #define PROGRESS_SYMBOL_SPECIAL '#'
 #define EMPTY_CHAR ""
 #define IS_MODULO(index, modulo) index%modulo==0
+#define DISPLACE_ZERO(index) (index+1)
 
 namespace
 {
     char determineSpecialOrDefault(const int specialInterval, const int currentIndex)
     {
-        return IS_MODULO((currentIndex+1), specialInterval) ? PROGRESS_SYMBOL_SPECIAL : PROGRESS_SYMBOL_DEFAULT;
+        return IS_MODULO(DISPLACE_ZERO(currentIndex), specialInterval) ?
+        PROGRESS_SYMBOL_SPECIAL:
+        PROGRESS_SYMBOL_DEFAULT;
     }
 
     bool printProgressChar(const char c)
@@ -39,6 +42,11 @@ ProgressBar::ProgressBar(const int total_progress_marks, const int special_mark_
     metricTotal{metricTotal} 
 {}  // Constructor will simply init const int members. These will determine the progress bar's behavior
 
+std::unique_ptr<ProgressBar> ProgressBar::createProgressBar(const int totalMarks, const int specialInterval, const int metricTotal)
+{
+    return std::unique_ptr<ProgressBar>(new ProgressBar(totalMarks, specialInterval, metricTotal));
+}   // Unique Ptr Constructor
+
 // Will determine if next char needs to be printed based on current marks and theoretical desired marks based on metric progress
 char ProgressBar::nextProgressBarChar(const int currentMetricProgress, const int printedSymbols)
 {
@@ -53,6 +61,6 @@ int ProgressBar::displayProgressBar(int& metric, int printedSymbols)
     while (metric != this->metricTotal) {
         printedSymbols += printProgressChar(nextProgressBarChar(metric, printedSymbols)); // will increment printedSymbols if nextProgressBarChar returns true
     }
-    std::cout << nextProgressBarChar(metric, printedSymbols) << std::endl;
+    std::cout << nextProgressBarChar(metric, printedSymbols) << std::endl;  // Print final symbol after breaking out of loop
     return metric;
 }
