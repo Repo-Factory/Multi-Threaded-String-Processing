@@ -1,6 +1,6 @@
 /*******************************************************************************
  * @author Conner Sommerfield
- * @author Dustin Cook
+ * @author Dustin Cook 820004205
  * @name countvocabstrings
  * 
  * @details Reads words from two files passed as cmd line arguments 
